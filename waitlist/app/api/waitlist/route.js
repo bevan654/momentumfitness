@@ -51,26 +51,25 @@ export async function POST(request) {
 
     const supabase = createServiceClient();
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('waitlist')
-      .insert([{ email: email.toLowerCase().trim() }])
-      .select();
+      .insert([{ email: email.toLowerCase().trim() }]);
 
     if (error) {
+      console.error('Supabase error:', JSON.stringify(error));
       if (error.code === '23505') {
         return NextResponse.json(
           { error: "You're already on the list!" },
           { status: 409 }
         );
       }
-      console.error('Supabase error:', error);
       return NextResponse.json(
         { error: 'Something went wrong. Please try again.' },
         { status: 500 }
       );
     }
 
-    return NextResponse.json({ success: true, data });
+    return NextResponse.json({ success: true });
   } catch (err) {
     console.error('API error:', err);
     return NextResponse.json(
